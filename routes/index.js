@@ -6,8 +6,8 @@ const loginRouter = require('./loginRoute');
 
 const router = express.Router();
 
-router.use('/', auth.isAuthenticated, homeRouter);
 router.use('/users', auth.isAuthenticated, userRouter);
-router.use('/', loginRouter);
+router.use('/auth', loginRouter);
+router.use('/', auth.isAuthenticated, homeRouter);
 
 module.exports = router;
