@@ -21,8 +21,17 @@ const UserSchema = new Schema({
     minlength: 3,
     maxlength: 255,
   },
-  isAdmin: Boolean
+  date: {
+    type: String,
+    required: true,
+    default: Date.now
+  },
+  role: {
+    type: String,
+    required: true,
+    default: 'user'
+  }
 });
 
 const UserMaster = mongoose.model('user_master', UserSchema);
-exports.UserMaster = UserMaster;
+module.exports = UserMaster;
