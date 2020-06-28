@@ -1,13 +1,34 @@
 const jwt = require('jsonwebtoken');
 
-const generateToken = (user) => {
+const generateAccessToken = (user) => {
   return jwt.sign(
     {
       id: user._id,
+      name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin
+      date: user.date,
+      role: user.role
     },
-    process.env.SECRET_KEY
+    process.env.ACCESS_TOKEN_SECRET_KEY,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_VALIDITY
+    }
+  );
+};
+
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      date: user.date,
+      role: user.role
+    },
+    process.env.REFRESH_TOKEN_SECRET_KEY,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_VALIDITY
+    }
   );
 };
 
@@ -30,7 +51,7 @@ const validateRequest = (req, res, next) => {
     return;
   }
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY, (err, decoded) => {
     if (err) {
       res.status(401).send('Unathorized');
       return;
@@ -39,4 +60,4 @@ const validateRequest = (req, res, next) => {
   });
 }
 
-module.exports = { generateToken, isAuthenticated: validateRequest };
+module.exports = { generateAccessToken, generateRefreshToken, isAuthenticated: validateRequest };
