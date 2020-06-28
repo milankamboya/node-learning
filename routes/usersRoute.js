@@ -1,9 +1,10 @@
 const express = require('express');
+const UserMaster = require('../models/user');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const users = [{ name: 'Guru', age: '27' }, { name: 'Backy', age: '27' }];
+router.get('/', async (req, res) => {
+  const users = await UserMaster.find();
   return res.json(users);
 });
 
