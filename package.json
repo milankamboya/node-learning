@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/milankamboya/node-learning#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "connect-mongo": "^3.2.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
