@@ -1,12 +1,18 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const UserMaster = require('../models/user');
 const auth = require('../config/auth');
+const validate = require('../config/validations');
 
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
+
+  const { error } = validate.validateResitration(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
   const { name, email, password } = req.body;
 
   const tempUser = await UserMaster.findOne({ email });
@@ -22,6 +28,11 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+  const { error } = validate.validateLogin(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
   const { email, password } = req.body;
   const user = await UserMaster.findOne({ email });
   if (!user) {
