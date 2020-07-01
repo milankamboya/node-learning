@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const invalidTokensMap = new Map();
 
 const generateAccessToken = (user) => {
   return jwt.sign(
@@ -35,29 +36,46 @@ const generateRefreshToken = (user) => {
 const validateRequest = (req, res, next) => {
   const tokenHeader = req.headers.authorization;
   if (!tokenHeader) {
-    res.status(400).send('Please provide token');
-    return;
+    return res.status(400).send('Please provide token');
   }
 
   const bearer = tokenHeader.split(' ')[0];
   if (!bearer || bearer !== 'Bearer') {
-    res.status(400).send('Invalid header');
-    return;
+    return res.status(400).send('Invalid header');
   }
 
   const token = tokenHeader.split(' ')[1];
   if (!token) {
-    res.status(400).send('Invalid header');
-    return;
+    return res.status(400).send('Invalid header');
+  }
+
+  if (checkInvalidTokenInfo(token)) {
+    return res.status(404).send('Token Invalid');
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY, (err, decoded) => {
     if (err) {
-      res.status(401).send('Unathorized');
-      return;
+      return res.status(401).send(err);
     }
     next();
   });
 }
 
-module.exports = { generateAccessToken, generateRefreshToken, isAuthenticated: validateRequest };
+const setInvalidTokenInfo = (accessToken, refreshToken) => {
+  invalidTokensMap.set(accessToken, refreshToken);
+}
+
+const checkInvalidTokenInfo = (accessToken) => {
+  return invalidTokensMap.has(accessToken);
+}
+
+const getInvalidTokenInfo = () => invalidTokensMap;
+
+module.exports = {
+  generateAccessToken,
+  generateRefreshToken,
+  isAuthenticated: validateRequest,
+  setInvalidTokenInfo,
+  checkInvalidTokenInfo,
+  getInvalidTokenInfo
+};
