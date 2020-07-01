@@ -1,11 +1,8 @@
 const express = require('express');
-const UserMaster = require('../models/user');
-
+const auth = require('../config/auth');
+const UserController = require('../controllers/UserController');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const users = await UserMaster.find();
-  return res.json(users);
-});
+router.get('/', auth.isAuthenticated, UserController.getUsers);
 
 module.exports = router;
